@@ -1,0 +1,5 @@
+src/main/resources/applocation.conf
+.idea/
+project/
+target/
+src/main/resources/application.conf
