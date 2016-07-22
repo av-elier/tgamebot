@@ -1,11 +1,11 @@
 package avelier.tgamebot
 
-import info.mukel.telegrambot4s._
-import api._
-import methods._
-import models._
-import Implicits._
+import info.mukel.telegrambot4s.api._
+import info.mukel.telegrambot4s.methods._
+import info.mukel.telegrambot4s.models._
+import info.mukel.telegrambot4s.Implicits._
 import avelier.tgamebot.config.Settings
+import avelier.tgamebot.games.{TGame, TGameSingle, TicTacToe}
 
 object Main {
 
@@ -22,8 +22,21 @@ object Main {
       }
     }
   }
+  object GameBot extends TelegramBot with Polling {
+    override def token: String = Settings.botToken
+
+    val game = new TGameSingle(chatId => new TicTacToe(chatId))
+
+    override def handleMessage(message: Message): Unit = {
+      for (text <- message.text) text match {
+        case "/start" => game.start(message).foreach(req => api.request(req))
+        case _ => game.handle(message).foreach(req => api.request(req))
+      }
+    }
+  }
 
   def main(args: Array[String]): Unit = {
-    EchoBot.run()
+//    EchoBot.run()
+    GameBot.run()
   }
 }
