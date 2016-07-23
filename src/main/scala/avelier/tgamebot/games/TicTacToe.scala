@@ -1,7 +1,5 @@
 package avelier.tgamebot.games
 
-import java.util.logging.Logger
-
 import info.mukel.telegrambot4s.methods.{ApiRequest, ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.{KeyboardButton, Message, ReplyKeyboardMarkup}
 import info.mukel.telegrambot4s.Implicits._
@@ -12,7 +10,7 @@ import scala.util.Random
 /**
   * Created by Adelier on 22.07.2016.
   */
-class TicTacToe(chatId: Long) extends TGameSingleInstance(chatId: Long) {
+class TicTacToe(chatId: Long) extends TGameSingleInstance(chatId) {
   sealed trait Mark {
     def other: Mark
   }
@@ -27,7 +25,6 @@ class TicTacToe(chatId: Long) extends TGameSingleInstance(chatId: Long) {
 
   class TicTacToeBoard(val state: mutable.Seq[mutable.Seq[Option[Mark]]] = mutable.Seq.fill(3,3)(None)) {
     def put(pos: (Int, Int), mark: Mark): Boolean = {
-      Logger.getGlobal.info(s"putting $pos")
       state(pos._1)(pos._2) match {
         case Some(_) => false
         case None =>
@@ -109,7 +106,6 @@ class TicTacToe(chatId: Long) extends TGameSingleInstance(chatId: Long) {
       case Some("x") => playerMark = Cross
       case Some("o") => playerMark = Nought
       case Some(posPattern(x, y)) =>
-        Logger.getGlobal.info(s"posPattern $x, $y")
         // human turn
         val success = game.put((x.toInt, y.toInt), playerMark)
         if (!success) {
@@ -140,7 +136,6 @@ class TicTacToe(chatId: Long) extends TGameSingleInstance(chatId: Long) {
           return responseStateWithDefaultKeyboard ++ Seq(SendMessage(chatId, s"Game ended! No winner"))
         }
       case _ =>
-        Logger.getGlobal.info("_______________")
         return responseStateWithDefaultKeyboard
     }
     responseStateWithDefaultKeyboard
